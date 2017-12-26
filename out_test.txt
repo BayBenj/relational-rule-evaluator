@@ -1,0 +1,212 @@
+Scheme Evaluation
+
+Fact Evaluation
+
+auntOrUncleOf
+
+childOf
+  X='Ann' Y='Jill'
+  X='Jill' Y='Ned'
+  X='Ned' Y='Bea'
+  X='Tim' Y='Bea'
+
+cousinOf
+
+grandchildOf
+
+greatGrandchildOf
+
+parentOf
+
+siblingOf
+
+Rule Evaluation
+
+Dependency Graph
+  R0:
+  R1:
+  R2: R1
+  R3: R4
+  R4: R0
+  R5: R3
+  R6: R4
+  R7: R1
+
+Reverse Graph
+  R0: R4
+  R1: R2 R7
+  R2:
+  R3: R5
+  R4: R3 R6
+  R5:
+  R6:
+  R7:
+
+Postorder Numbers
+  R0: 5
+  R1: 8
+  R2: 6
+  R3: 2
+  R4: 4
+  R5: 1
+  R6: 3
+  R7: 7
+
+SCC Search Order
+  R1
+  R7
+  R2
+  R0
+  R4
+  R6
+  R3
+  R5
+
+SCC: R1
+grandchildOf(C,GP) :- childOf(C,P),childOf(P,GP)
+  X='Ann' Z='Ned'
+  X='Jill' Z='Bea'
+
+SCC: R7
+cousinOf(C1,C2) :- grandchildOf(C1,P),grandchildOf(C2,P)
+  X='Ann' Y='Ann'
+  X='Jill' Y='Jill'
+
+SCC: R2
+greatGrandchildOf(C,GGP) :- grandchildOf(C,GP),childOf(GP,GGP)
+  X='Ann' Z='Bea'
+
+SCC: R0
+parentOf(P,C) :- childOf(C,P)
+  X='Bea' Y='Ned'
+  X='Bea' Y='Tim'
+  X='Jill' Y='Ann'
+  X='Ned' Y='Jill'
+
+SCC: R4
+siblingOf(C1,C2) :- parentOf(P,C1),parentOf(P,C2)
+  X='Ann' Y='Ann'
+  X='Jill' Y='Jill'
+  X='Ned' Y='Ned'
+  X='Ned' Y='Tim'
+  X='Tim' Y='Ned'
+  X='Tim' Y='Tim'
+
+SCC: R6
+cousinOf(C1,C2) :- childOf(C1,P1),childOf(C2,P2),siblingOf(P1,P2)
+
+SCC: R3
+auntOrUncleOf(AU,C) :- childOf(C,P),siblingOf(AU,P)
+  X='Jill' Y='Ann'
+  X='Ned' Y='Jill'
+  X='Tim' Y='Jill'
+
+SCC: R5
+cousinOf(C1,C2) :- auntOrUncleOf(AU,C1),auntOrUncleOf(AU,C2)
+
+Rule Evaluation Complete
+
+auntOrUncleOf
+  X='Jill' Y='Ann'
+  X='Ned' Y='Jill'
+  X='Tim' Y='Jill'
+
+childOf
+  X='Ann' Y='Jill'
+  X='Jill' Y='Ned'
+  X='Ned' Y='Bea'
+  X='Tim' Y='Bea'
+
+cousinOf
+  X='Ann' Y='Ann'
+  X='Jill' Y='Jill'
+
+grandchildOf
+  X='Ann' Z='Ned'
+  X='Jill' Z='Bea'
+
+greatGrandchildOf
+  X='Ann' Z='Bea'
+
+parentOf
+  X='Bea' Y='Ned'
+  X='Bea' Y='Tim'
+  X='Jill' Y='Ann'
+  X='Ned' Y='Jill'
+
+siblingOf
+  X='Ann' Y='Ann'
+  X='Jill' Y='Jill'
+  X='Ned' Y='Ned'
+  X='Ned' Y='Tim'
+  X='Tim' Y='Ned'
+  X='Tim' Y='Tim'
+
+Query Evaluation
+
+grandchildOf(C,GP)? Yes(2)
+select
+  X='Ann' Z='Ned'
+  X='Jill' Z='Bea'
+project
+  X='Ann' Z='Ned'
+  X='Jill' Z='Bea'
+rename
+  C='Ann' GP='Ned'
+  C='Jill' GP='Bea'
+
+greatGrandchildOf(C,GP)? Yes(1)
+select
+  X='Ann' Z='Bea'
+project
+  X='Ann' Z='Bea'
+rename
+  C='Ann' GP='Bea'
+
+auntOrUncleOf(A,B)? Yes(3)
+select
+  X='Jill' Y='Ann'
+  X='Ned' Y='Jill'
+  X='Tim' Y='Jill'
+project
+  X='Jill' Y='Ann'
+  X='Ned' Y='Jill'
+  X='Tim' Y='Jill'
+rename
+  A='Jill' B='Ann'
+  A='Ned' B='Jill'
+  A='Tim' B='Jill'
+
+siblingOf(A,B)? Yes(6)
+select
+  X='Ann' Y='Ann'
+  X='Jill' Y='Jill'
+  X='Ned' Y='Ned'
+  X='Ned' Y='Tim'
+  X='Tim' Y='Ned'
+  X='Tim' Y='Tim'
+project
+  X='Ann' Y='Ann'
+  X='Jill' Y='Jill'
+  X='Ned' Y='Ned'
+  X='Ned' Y='Tim'
+  X='Tim' Y='Ned'
+  X='Tim' Y='Tim'
+rename
+  A='Ann' B='Ann'
+  A='Jill' B='Jill'
+  A='Ned' B='Ned'
+  A='Ned' B='Tim'
+  A='Tim' B='Ned'
+  A='Tim' B='Tim'
+
+cousinOf(A,B)? Yes(2)
+select
+  X='Ann' Y='Ann'
+  X='Jill' Y='Jill'
+project
+  X='Ann' Y='Ann'
+  X='Jill' Y='Jill'
+rename
+  A='Ann' B='Ann'
+  A='Jill' B='Jill'

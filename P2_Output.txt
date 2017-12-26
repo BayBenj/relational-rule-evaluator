@@ -1,0 +1,35 @@
+Success!
+Schemes(7):
+  childOf(X,Y)
+  parentOf(X,Y)
+  grandchildOf(X,Z)
+  greatGrandchildOf(X,Z)
+  auntOrUncleOf(X,Y)
+  siblingOf(X,Y)
+  cousinOf(X,Y)
+Facts(4):
+  childOf('Tim','Bea')
+  childOf('Jill','Ned')
+  childOf('Ned','Bea')
+  childOf('Ann','Jill')
+Rules(8):
+  parentOf(P,C) :- childOf(C,P)
+  grandchildOf(C,GP) :- childOf(C,P),childOf(P,GP)
+  greatGrandchildOf(C,GGP) :- grandchildOf(C,GP),childOf(GP,GGP)
+  auntOrUncleOf(AU,C) :- childOf(C,P),siblingOf(AU,P)
+  siblingOf(C1,C2) :- parentOf(P,C1),parentOf(P,C2)
+  cousinOf(C1,C2) :- auntOrUncleOf(AU,C1),auntOrUncleOf(AU,C2)
+  cousinOf(C1,C2) :- childOf(C1,P1),childOf(C2,P2),siblingOf(P1,P2)
+  cousinOf(C1,C2) :- grandchildOf(C1,P),grandchildOf(C2,P)
+Queries(5):
+  grandchildOf(C,GP)
+  greatGrandchildOf(C,GP)
+  auntOrUncleOf(A,B)
+  siblingOf(A,B)
+  cousinOf(A,B)
+Domain(5):
+  'Ann'
+  'Bea'
+  'Jill'
+  'Ned'
+  'Tim'
